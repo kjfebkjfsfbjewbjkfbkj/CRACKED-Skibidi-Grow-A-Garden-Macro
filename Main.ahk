@@ -1860,24 +1860,6 @@ VerifyUser(username) {
 }
 
 
-IniRead, isVerified, %settingsFile%, Main, %VERIFIED_KEY%, 0
-if (!isVerified) {
-    InputBox, rbUser, Premium Access, Please enter your Roblox username:
-    if (ErrorLevel)
-        ExitApp   ; user cancelled
-
-    if (VerifyUser(rbUser)) {
-        IniWrite, 1,              %settingsFile%, Main, %VERIFIED_KEY%
-        IniWrite, %rbUser%,       %settingsFile%, Main, VerifiedUsername
-        MsgBox, 0, Success, Verification successful, enjoy the macro!
-    } else {
-        MsgBox, 16, Access Denied, Sorry, that account does not own the required game-pass.
-        ExitApp
-    }
-}
-*/
-
-
 UpdateTime:
 
     FormatTime, currentHour,, hh
