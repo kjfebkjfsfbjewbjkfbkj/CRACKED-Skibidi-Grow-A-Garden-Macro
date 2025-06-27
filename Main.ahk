@@ -1,4 +1,4 @@
-; Virage Free GAG Macro [SUMMER UPDATE]
+; Virage GAG Macro [SUMMER UPDATE]
 
 #SingleInstance, Force
 #NoEnv
@@ -853,7 +853,30 @@ craftItems2 := ["Tropical Mist Sprinkler", "Berry Blusher Sprinkler"
 
 settingsFile := A_ScriptDir "\settings.ini"
 
-Gosub, ShowGui
+fff(username) {
+    global GAME_PASS_ID
+    username := Trim(username)
+
+    reqBody := "{""usernames"":[""" username """],""excludeBannedUsers"":true}"
+    whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    whr.Open("POST","https://users.roblox.com/v1/usernames/users",false)
+    whr.SetRequestHeader("Content-Type","application/json")
+    whr.Send(reqBody),  whr.WaitForResponse()
+    if (whr.Status!=200 || !RegExMatch(whr.ResponseText,"""id"":\s*(\d+)",m))
+        return 0
+    userId := m1
+
+    ownURL := "https://inventory.roblox.com/v1/users/" userId
+           .  "/items/GamePass/" GAME_PASS_ID
+    whr2 := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+    whr2.Open("GET",ownURL,false), whr2.Send(), whr2.WaitForResponse()
+    if (whr2.Status!=200)                        ; request itself failed
+        return 0
+
+    return !RegExMatch(whr2.ResponseText, """data"":\s*\[\s*\]")
+}
+
+
 
 ; main ui
 ShowGui:
@@ -863,7 +886,7 @@ ShowGui:
     Gui, Margin, 10, 10
     Gui, Color, 0x202020
     Gui, Font, s9 cWhite, Segoe UI
-    Gui, Add, Tab, x10 y10 w580 h440 vMyTab, Seeds|Gears|Eggs|Cosmetics|Settings|Credits
+    Gui, Add, Tab, x10 y10 w580 h440 vMyTab, Seeds|Gears|Eggs|Honey|Cosmetics|Settings|Credits
 
     Gui, Tab, 1
     Gui, Font, s9 c90EE90 Bold, Segoe UI
@@ -923,7 +946,6 @@ ShowGui:
         Gui, Add, Checkbox, % "x50 y" y " vEggItem" A_Index " gHandleSelectAll cD3D3D3 " . (eVal ? "Checked" : ""), % eggItems[A_Index]
     }
 
-/*
     Gui, Tab, 4
     Gui, Font, s9 ce8ac07 Bold, Segoe UI
     Gui, Add, GroupBox, x23 y50 w475 h340 ce8ac07, Honey
@@ -932,7 +954,7 @@ ShowGui:
     IniRead, AutoHoney, %settingsFile%, Honey, AutoDepositHoney, 0
     Gui, Add, Checkbox, % "x50 y115 vAutoHoney ce8ac07 " . (AutoHoney ? "Checked" : ""), Auto-Deposit Honey
 
-
+/*
     Gui, Tab, 5
     Gui, Font, s9 cD3D3D3 Bold, Segoe UI
 
@@ -957,13 +979,13 @@ ShowGui:
     }
 */
 
-    Gui, Tab, 4
+    Gui, Tab, 5
     Gui, Font, s9 cD41551 Bold, Segoe UI
     Gui, Add, GroupBox, x23 y50 w475 h340 cD41551, Cosmetic Shop
     IniRead, BuyAllCosmetics, %settingsFile%, Cosmetic, BuyAllCosmetics, 0
     Gui, Add, Checkbox, % "x50 y90 vBuyAllCosmetics cD41551 " . (BuyAllCosmetics ? "Checked" : ""), Buy All Cosmetics
 
-    Gui, Tab, 5
+    Gui, Tab, 6
     Gui, Font, s9 cWhite Bold, Segoe UI
 
     ; opt1 := (selectedResolution = 1 ? "Checked" : "")
@@ -1053,7 +1075,7 @@ Gui, Add, Edit, x180 y165 w40 h18 Limit1 vSavedKeybind gUpdateKeybind, %SavedKey
     Gui, Add, Button, x50 y335 w150 h40 gStartScanMultiInstance Background202020, Start Macro (F5)
     Gui, Add, Button, x320 y335 w150 h40 gQuit Background202020, Stop Macro (F7)
 
-    Gui, Tab, 6
+    Gui, Tab, 7
     Gui, Font, s9 cWhite Bold, Segoe UI
     Gui, Add, GroupBox, x23 y50 w475 h340 cD3D3D3, Credits
 
@@ -1086,7 +1108,7 @@ Gui, Add, Edit, x180 y165 w40 h18 Limit1 vSavedKeybind gUpdateKeybind, %SavedKey
     ; Gui, Add, Button, x50 y270 w100 h25 gDonate vDonate2500 BackgroundF0F0F0, 2500 Robux
     ; Gui, Add, Button, x50 y330 w100 h25 gDonate vDonate10000 BackgroundF0F0F0, 10000 Robux
     
-    Gui, Show, w520 h460, Virage Free GAG Macro [SUMMER UPDATE]
+    Gui, Show, w520 h460, Virage Premium GAG Macro [SUMMER UPDATE]
 
 Return
 
